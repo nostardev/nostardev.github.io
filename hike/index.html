@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <title>Hike</title>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <style>html, body {margin: 0; height: 100%; overflow: hidden}</style>
+  </head>
+  <body>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <script src="./hike.js"></script>
+    <script>
+      window.addEventListener("load", async () => {
+        let wasm = await wasm_bindgen("./hike_bg.wasm");
+
+        var canvas = document.getElementById("canvas");
+        let width = canvas.width;
+        let height = canvas.height;
+        canvas.onpointerdown = (e) => {
+          wasm.on_pointer_down(e.x / width, e.y / height);
+          e.preventDefault();
+        };
+      });
+    </script>
+  </body>
+</html>
