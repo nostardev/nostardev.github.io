@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Boop</title>
+        <style>
+            body {
+                background-color: #fcf0e4;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="board-div">
+            <img id="board" src="assets/board.jpg" alt="board" />
+        </div>
+        <div>
+            <img id="thinking" src="assets/thinking.gif" alt="thinking" hidden=hidden />
+        </div>
+        <div id="gameover">
+            <span id="result"></span>
+            <button id="reset">Rematch!</button>
+        </div>
+        <script type="module">
+            import init, { setup, BoopGameWrapper } from './wasm_boop.js';
+
+            // For board image
+            let scale;
+            let suffix;
+            let leftBorder;
+            let squareWidth;
+            let topBorder;
+            let squareHeight;
+            let catOffset;
+
+            let game;
+            let cats = {};
+            let thinking = false;
+
+            function onClick(event) {
+                if (thinking) {
+                    return;
+                }
+
+                var x = Math.floor((event.pageX - this.offsetLeft - leftBorder) / squareWidth);
+                var y = Math.floor((event.pageY - this.offsetTop - topBorder) / squareHeight);
+
+                // 6x6 grid
+                const loc = 6 * y + x;
+                if (game.board()[loc].piece == 0) {
+                    thinking = true;
+                    game.place_piece(loc);
+                    addCat(loc, 'orangekitten' + suffix + '.png');
+                    document.getElementById("thinking").hidden = false;
+                    animateBoops(() => {
+                        if (!check_gameover()) {
+                            let aiLoc = game.ai_move();
+                            addCat(aiLoc, 'graykitten' + suffix + '.png');
+                            animateBoops(() => {
+                                document.getElementById("thinking").hidden = true;
+                                if (!check_gameover()) {
+                                    thinking = false;
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+
+            function check_gameover() {
+                let result = game.result();
+                if (result == 0) {
+                    return false;
+                } else {
+                    document.getElementById("gameover").hidden = false;
+                    if (result == 1) {
+                        document.getElementById("result").textContent = "You won!";
+                    } else {
+                        document.getElementById("result").textContent = "You lost!";
+                    }
+                    return true;
+                }
+            }
+
+            function addCat(loc, filename) {
+                let cat = document.createElement('img');
+                cat.setAttribute('src', 'assets/' + filename);
+                cat.style.position = 'absolute';
+                cat.style.left = xForLoc(loc) + 'px';
+                cat.style.top = yForLoc(loc) + 'px';
+                document.body.appendChild(cat);
+                let id = game.board()[loc].id;
+                cats[id] = cat;
+            }
+
+            function xForLoc(loc) {
+                let board = document.getElementById('board');
+                return board.offsetLeft + leftBorder + (loc % 6) * squareWidth + catOffset;
+            }
+
+            function yForLoc(loc) {
+                let board = document.getElementById('board');
+                return board.offsetTop + topBorder + Math.floor(loc / 6) * squareHeight + catOffset;
+            }
+
+            function animateBoops(callback) {
+                const duration = 500;
+                let deadCats = { ...cats };
+                const board = game.board();
+                for (let loc = 0; loc < board.length; ++loc) {
+                    let sq = board[loc];
+                    if (sq.piece != 0) {
+                        const id = sq.id;
+                        delete deadCats[id];
+                        animateCat(cats[id], loc, duration, () => {});
+                    }
+                }
+                for (let id in deadCats) {
+                    const cat = cats[id];
+                    animateCat(cats[id], -1, 500, () => {
+                        cat.remove();
+                        delete cats[id];
+                    });
+                }
+                setTimeout(callback, duration + 100);
+            }
+
+            function animateCat(cat, loc, duration, callback) {
+                let startX = parseFloat(cat.style.left);
+                let startY = parseFloat(cat.style.top);
+                let endX = xForLoc(loc);
+                let endY = yForLoc(loc);
+                let startTime = null;
+                function animate(currentTime) {
+                    if (!startTime) {
+                        startTime = currentTime;
+                    }
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const newX = startX + (endX - startX) * progress;
+                    const newY = startY + (endY - startY) * progress;
+                    // TODO: use translation for performance
+                    cat.style.left = newX + 'px';
+                    cat.style.top = newY + 'px';
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        callback();
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+
+            function reset() {
+                game = BoopGameWrapper.new();
+                thinking = false;
+                document.getElementById("gameover").hidden = true;
+                for (let cat in cats) {
+                    cats[cat].remove();
+                }
+                cats = {};
+
+                if (isMobile()) {
+                    scale = 2;
+                    suffix = "sm";
+                } else {
+                    scale = 1;
+                    suffix = "";
+                }
+                document.getElementById("board").setAttribute("src", "assets/board" + suffix + ".jpg");
+                document.getElementById("thinking").setAttribute("src", "assets/thinking" + suffix + ".gif");
+                leftBorder = 32 / scale;
+                squareWidth = 104 / scale;
+                topBorder = 22 / scale;
+                squareHeight = 100 / scale;
+                catOffset = 12.5 / scale;
+            }
+
+            function isMobile() {
+                return window.innerWidth < 1000;
+            }
+
+            async function run() {
+                await init();
+                setup();
+                reset();
+                document.getElementById('board').addEventListener('click', onClick);
+                document.getElementById('reset').addEventListener('click', reset);
+            }
+
+            run();
+        </script>
+    </body>
+</html>
+
