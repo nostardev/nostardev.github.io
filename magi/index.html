@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Magi</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+        }
+        canvas {
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container" width="768" height="768">
+        <canvas id="magi-canvas"></canvas>
+    </div>
+    <script type="module">
+        const dpr = window.devicePixelRatio;
+        if (dpr != 1) {
+            console.log("Scaling...");
+            let canvas = document.getElementById("canvas-container");
+            canvas.style.width=`${768 * dpr}px`;
+            canvas.style.height=`${768 * dpr}px`;
+        }
+        import init from "./magi.js";
+        init().catch((error) => {
+            console.error("Error initializing wasm:", error);
+        });
+    </script>
+</body>
+</html>
+
