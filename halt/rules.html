@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Halt! Rules</title>
+        <style>
+            body {
+                background-color: black;
+                color: white;
+            }
+            a {
+                color: gold;
+            }
+        </style>
+    </head>
+    <body>
+        <p>These are the rules for the game, <em>Halt!</em></p>
+        <p><a href="index.html">Click to play now!</a></p>
+        <h3>Overview</h3>
+        <p>The game is played with two armies, one red and one blue (you are red). Each army consists of one king,
+        and several knights (usually eight). The goal is to capture the enemy king with your knights,
+        while avoiding capture yourself.</p> 
+        <p style="flex">
+            <p>Kings:</p>
+            <img src="assets/king1.png" />
+            <img src="assets/king2.png" />
+            <p>Knights:</p>
+            <img src="assets/knight1.png" />
+            <img src="assets/knight2.png" />
+        </p>
+        <h3>Movement Rules</h3>
+        <p>
+            <ul>
+                <li />Players alternate turns.
+                <li />A king or knight may move one space in any direction (including diagonals)
+        as long as the space is unoccupied.
+                <li />A king or knight may push an adjacent knight of any color
+        one space, and move into the space previously occupied. However, it cannot push if the space that the knight
+        would be moved into is occupied. That is, two knights in a row cannot be pushed.
+                <li />You can never push a king.
+                <li />For convenience, legal moves are highlighted in yellow when playing the game.
+            </ul>
+        </p>
+        <p style="flex">
+            <p>Example legal moves:</p>
+            <video autoplay loop muted playsinline>
+                <source src="assets/legalmoves.webm" type="video/webm">
+            </video>
+        </p>
+        <h3>No Repetition Rule</h3>
+        <p>You may not immediately repeat positions. That is, if one knight pushes another, the pushed knight cannot push back
+        on the next move to repeat the previous position.</p>
+        <h3>Victory Conditions</h3>
+        <p>
+            <ul>
+                <li />If three knights are adjacent to the enemy king, they capture the king and win the game.
+                <li />If the king is on the side of the board, this goes down to two knights.
+                <li />If the king is in the corner then only one knight is needed.
+            </ul>
+            The latter rules are to prevent the king from cowardly hiding in the corner surrounded by its own knights,
+            where it can be impossible to get three opposing knights adjacent to the king.
+        </p>
+        <h3>Have Fun!</h3>
+        <p><a href="index.html">Click to play now!</a></p>
+    </body>
+</html>
