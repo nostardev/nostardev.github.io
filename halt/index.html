@@ -33,6 +33,7 @@
             register_plugin = function (importObject) {
                 importObject.env.reset_game = function(config) {
                     // console.log("Reset: " + config);
+                    computer_move = null;
                     worker.postMessage({reset: config});
                 };
                 importObject.env.human_move = function(jso) {
@@ -48,6 +49,14 @@
                         return js_object(tmp);
                     }
                     return -1;
+                };
+                importObject.env.open_link = function(jso) {
+                    let link = consume_js_object(jso);
+                    window.open(link, "_blank");
+                };
+                importObject.env.set_skill = function(jso) {
+                    let skill = consume_js_object(jso);
+                    worker.postMessage({skill: skill});
                 };
             };
 
