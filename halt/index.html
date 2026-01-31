@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="e22ea0f0-d865-4d30-beca-50fbbb0e03e0"></script>
     <title>Halt</title>
     <style>
         html,
@@ -57,6 +58,19 @@
                 importObject.env.set_skill = function(jso) {
                     let skill = consume_js_object(jso);
                     worker.postMessage({skill: skill});
+                };
+                importObject.env.get_storage = function(ko) {
+                    let key = consume_js_object(ko);
+                    let val = localStorage.getItem(key);
+                    if (val !== null) {
+                        return js_object(val);
+                    }
+                    return -1;
+                };
+                importObject.env.set_storage = function(ko, vo) {
+                    let key = consume_js_object(ko);
+                    let val = consume_js_object(vo);
+                    localStorage.setItem(key, val);
                 };
             };
 
