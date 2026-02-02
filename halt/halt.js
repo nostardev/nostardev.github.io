@@ -49,17 +49,6 @@ export function make_move(w, mv) {
     }
 }
 
-/**
- * @param {WasmGame} w
- * @param {string} skill
- */
-export function set_skill(w, skill) {
-    _assertClass(w, WasmGame);
-    const ptr0 = passStringToWasm0(skill, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-    const len0 = WASM_VECTOR_LEN;
-    wasm.set_skill(w.__wbg_ptr, ptr0, len0);
-}
-
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,

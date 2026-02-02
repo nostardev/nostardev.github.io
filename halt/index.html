@@ -18,10 +18,20 @@
             background: black;
             z-index: 0;
         }
+        #stats {
+            width: 75%;
+            background-color: black;
+            text-align: center;
+            color: gold;
+        }
+        #stats table {
+            width: 80%;
+        }
     </style>
 </head>
 <body>
     <canvas id="glcanvas" tabindex='1'></canvas>
+    <div popover="auto" id="stats">stats go here!</div>
     <script src="gl.js"></script>
     <script src="sapp_jsutils.js"></script>
     <script>
@@ -55,10 +65,6 @@
                     let link = consume_js_object(jso);
                     window.open(link, "_blank");
                 };
-                importObject.env.set_skill = function(jso) {
-                    let skill = consume_js_object(jso);
-                    worker.postMessage({skill: skill});
-                };
                 importObject.env.get_storage = function(ko) {
                     let key = consume_js_object(ko);
                     let val = localStorage.getItem(key);
@@ -72,11 +78,31 @@
                     let val = consume_js_object(vo);
                     localStorage.setItem(key, val);
                 };
+                importObject.env.show_stats = function() {
+                    display_stats();
+                };
             };
 
             miniquad_add_plugin({register_plugin});
         } else {
             alert("Your browser does not support this game");
+        }
+
+        function display_stats() {
+            const stats = document.getElementById("stats");
+            let content = "<table><tr><th>Level</th><th>Attempts</th></tr>";
+            for (let i = 0; i < 10; ++i) {
+                let j = localStorage.getItem(i);
+                if (j === null) {
+                    break;
+                }
+                let s = JSON.parse(j);
+                let a = s.attempts;
+                content += `<tr><td>${i + 1}</td><td>${a}</td></tr>`;
+            }
+            content += "</table>";
+            stats.innerHTML = content;
+            stats.showPopover();
         }
     </script>
     <!-- Minified and statically hosted version of https://github.com/not-fl3/macroquad/blob/master/js/mq_js_bundle.js -->
