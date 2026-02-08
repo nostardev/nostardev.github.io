@@ -177,10 +177,6 @@ function isLikeNone(x) {
     return x === undefined || x === null;
 }
 
-export function setup() {
-    wasm.setup();
-}
-
 function getArrayJsValueFromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     const mem = getDataViewMemory0();
@@ -190,6 +186,10 @@ function getArrayJsValueFromWasm0(ptr, len) {
     }
     wasm.__externref_drop_slice(ptr, len);
     return result;
+}
+
+export function setup() {
+    wasm.setup();
 }
 
 const BoopGameWrapperFinalization = (typeof FinalizationRegistry === 'undefined')
@@ -218,6 +218,12 @@ export class BoopGameWrapper {
         wasm.__wbg_boopgamewrapper_free(ptr, 0);
     }
     /**
+     * @param {number} loc
+     */
+    place_piece(loc) {
+        wasm.boopgamewrapper_place_piece(this.__wbg_ptr, loc);
+    }
+    /**
      * @returns {BoopGameWrapper}
      */
     static new() {
@@ -234,10 +240,11 @@ export class BoopGameWrapper {
         return v1;
     }
     /**
-     * @param {number} loc
+     * @returns {number}
      */
-    place_piece(loc) {
-        wasm.boopgamewrapper_place_piece(this.__wbg_ptr, loc);
+    result() {
+        const ret = wasm.boopgamewrapper_result(this.__wbg_ptr);
+        return ret;
     }
     /**
      * @returns {number}
@@ -245,13 +252,6 @@ export class BoopGameWrapper {
     ai_move() {
         const ret = wasm.boopgamewrapper_ai_move(this.__wbg_ptr);
         return ret >>> 0;
-    }
-    /**
-     * @returns {number}
-     */
-    result() {
-        const ret = wasm.boopgamewrapper_result(this.__wbg_ptr);
-        return ret;
     }
 }
 if (Symbol.dispose) BoopGameWrapper.prototype[Symbol.dispose] = BoopGameWrapper.prototype.free;
